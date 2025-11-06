@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ms-MY">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kemahiran Pemulihan: Operasi Darab Asas (Pembelajaran)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { box-sizing: border-box; }
+    .activity-card { min-height: 400px; }
+    .number-card { transition: all .3s ease; cursor: pointer; }
+    .number-card:hover { transform: scale(1.05); }
+
+    /* Gaya untuk Aktiviti 1: Mesin Kumpulan */
+    .group-box {
+      border: 2px solid #93c5fd; /* border-blue-300 */
+      background: #eff6ff; /* bg-blue-50 */
+      border-radius: 0.75rem; /* rounded-xl */
+      padding: 0.75rem; /* p-3 */
+      margin: 0.5rem; /* m-2 */
+      min-width: 80px;
+      min-height: 80px;
+    }
+    .group-item {
+      width: 2rem; /* w-8 */
+      height: 2rem; /* h-8 */
+      border-radius: 9999px; /* rounded-full */
+      background: #2563eb; /* bg-blue-600 */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem; /* text-xl */
+      color: white;
+      margin: 0.25rem; /* m-1 */
+    }
+
+    /* Gaya untuk Aktiviti 2: Kotak Pusing */
+    .visual-grid {
+      display: grid;
+      gap: 0.5rem; /* gap-2 */
+      border: 2px dashed #86efac; /* border-green-300 */
+      background: #f0fdf4; /* bg-green-50 */
+      padding: 1rem; /* p-4 */
+      border-radius: 0.75rem; /* rounded-xl */
+      transition: all 0.3s ease;
+    }
+    .grid-dot {
+      width: 1.5rem; /* w-6 */
+      height: 1.5rem; /* h-6 */
+      background: #16a34a; /* bg-green-600 */
+      border-radius: 9999px; /* rounded-full */
+    }
+
+    /* Gaya untuk Aktiviti 3: Lompat Sifir */
+    .numline-container {
+      background: #faf5ff; /* bg-purple-50 */
+      border: 2px solid #e9d5ff; /* border-purple-200 */
+      border-radius: 0.75rem; /* rounded-xl */
+      padding: 1.5rem; /* p-6 */
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .numline-item {
+      display: inline-block;
+      text-align: center;
+      margin: 0 0.5rem; /* mx-2 */
+      color: #581c87; /* text-purple-900 */
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
+    .numline-item.active {
+      font-weight: bold;
+      color: #9333ea; /* text-purple-600 */
+      transform: scale(1.2);
+    }
+    .numline-char {
+      font-size: 2.5rem; /* text-4xl */
+      transition: transform 0.3s ease;
+    }
+    
+    /* Gaya untuk Aktiviti 4 & 5: Sifir 0 & 1 */
+    .glass-box {
+      border: 2px solid #fdba74; /* border-orange-300 */
+      background: #fff7ed; /* bg-orange-50 */
+      border-radius: 0.75rem; /* rounded-xl */
+      padding: 1rem; /* p-4 */
+      margin: 0.5rem; /* m-2 */
+      width: 100px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end; /* Letak item di bawah */
+      font-size: 3rem; /* text-5xl */
+      color: #9a3412; /* text-orange-800 */
+      position: relative;
+    }
+    .glass-box.sifir-satu {
+      border-color: #fda4af; /* border-red-300 */
+      background: #fff1f2; /* bg-red-50 */
+      color: #9f1239; /* text-red-800 */
+    }
+
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-full">
+
+  <div class="bg-yellow-100 border-b-4 border-yellow-300 p-4 shadow-sm sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">📚</span>
+        <span id="info-text" class="text-lg font-semibold text-gray-800">
+          Pilih aktiviti untuk mula belajar darab!
+        </span>
+      </div>
+      <button id="speak-btn"
+              class="bg-yellow-300 hover:bg-yellow-400 text-yellow-800 font-bold py-2 px-4 rounded-full text-xl transition-colors duration-200"
+              onclick="speakInfo()">
+        🔊
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto p-6">
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6 activity-card flex items-center justify-center">
+      <div id="activity-content" class="text-center w-full">
+        <div class="py-16">
+          <div class="text-6xl mb-4">✖️</div>
+          <h2 class="text-3xl font-bold text-gray-800 mb-4">
+            Kemahiran Pemulihan: Operasi Darab Asas
+          </h2>
+          <p class="text-xl text-gray-600 mb-8">
+            Pilih aktiviti di bawah untuk meneroka konsep darab.
+          </p>
+          <div class="text-4xl">👇</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Pilih Aktiviti</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+        <button onclick="loadActivity(1)"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors duration-200">
+          🍎 Mesin Kumpulan
+        </button>
+        <button onclick="loadActivity(2)"
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors duration-200">
+          🔄 Kotak Pusing
+        </button>
+        <button onclick="loadActivity(3)"
+                class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors duration-200">
+          🤸 Lompat Sifir
+        </button>
+        <button onclick="loadActivity(4)"
+                class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors duration-200">
+          🥛 Misteri Sifir 0
+        </button>
+        <button onclick="loadActivity(5)"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg text-lg transition-colors duration-200">
+          🔵 Misteri Sifir 1
+        </button>
+      </div>
+
+      <div class="flex justify-center gap-4">
+        <button onclick="clearActivity()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg text-lg transition-colors duration-200">
+          🧹 Bersih
+        </button>
+        <button onclick="nextActivity()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg text-lg transition-colors duration-200">
+          ➡️ Seterusnya
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentActivity = 0;
+    let ttsEnabled = false;
+    let currentInfo = "Pilih aktiviti untuk mula belajar darab!";
+
+    // State untuk aktiviti
+    window.commState = { a: 2, b: 5, rotated: false };
+    window.numlineState = { sifir: 2, current: 0, steps: 0, max: 20 };
+
+    /* ====== TTS ====== */
+    function speak(text) {
+      if (!ttsEnabled) return;
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      setTimeout(() => {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'ms-MY';
+        u.rate = 0.9; u.pitch = 1.05;
+        const voices = window.speechSynthesis.getVoices();
+        const ms = voices.find(v => v.lang === 'ms-MY' || v.lang?.startsWith('ms'));
+        if (ms) u.voice = ms;
+        window.speechSynthesis.speak(u);
+      }, 100);
+    }
+    function setInfo(text) { currentInfo = text; document.getElementById('info-text').textContent = text; }
+    function speakInfo() {
+      if (!ttsEnabled) {
+        ttsEnabled = true;
+        const btn = document.getElementById('speak-btn');
+        btn.classList.add('bg-green-300', 'hover:bg-green-400');
+        btn.classList.remove('bg-yellow-300', 'hover:bg-yellow-400');
+      }
+      speak(currentInfo);
+    }
+
+    /* ====== Router ====== */
+    function loadActivity(n) {
+      currentActivity = n;
+      const content = document.getElementById('activity-content');
+      if (n === 1) return loadGroupMachineActivity(content);
+      if (n === 2) return loadCommutativeBoxActivity(content);
+      if (n === 3) return loadNumberLineActivity(content);
+      if (n === 4) return loadSifirZeroActivity(content);
+      if (n === 5) return loadSifirOneActivity(content);
+    }
+
+    /* ====== Aktiviti 1: Mesin Kumpulan ====== */
+    function loadGroupMachineActivity(content) {
+      setInfo("Guna slider untuk lihat berapa banyak 'kumpulan' dan 'ahli' yang anda boleh buat.");
+      content.innerHTML = `
+        <h3 class="text-2xl font-bold text-blue-600 mb-6">🍎 Mesin Kumpulan Sama Banyak</h3>
+        
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="w-full md:w-1/3 bg-blue-50 p-4 rounded-xl border border-blue-200">
+            <div class="mb-4">
+              <label for="slider-kumpulan" class="block text-lg font-semibold text-blue-800 mb-2">
+                Bilangan Kumpulan: <span id="val-kumpulan" class="font-bold">3</span>
+              </label>
+              <input type="range" id="slider-kumpulan" min="1" max="5" value="3" class="w-full" oninput="renderGroupMachine()">
+            </div>
+            <div>
+              <label for="slider-ahli" class="block text-lg font-semibold text-blue-800 mb-2">
+                Ahli dalam 1 Kumpulan: <span id="val-ahli" class="font-bold">2</span>
+              </label>
+              <input type="range" id="slider-ahli" min="0" max="10" value="2" class="w-full" oninput="renderGroupMachine()">
+            </div>
+          </div>
+          
+          <div class="w-full md:w-2/3">
+            <div id="group-visual" class="flex flex-wrap justify-center items-center bg-gray-50 p-4 rounded-xl min-h-48">
+              </div>
+            <div id="group-result" class="mt-4 text-center text-3xl font-bold text-gray-800 bg-yellow-100 p-4 rounded-lg">
+              3 kumpulan × 2 ahli = 6
+            </div>
+          </div>
+        </div>
+      `;
+      renderGroupMachine(); // Panggil sekali untuk paparan awal
+    }
+    
+    function renderGroupMachine() {
+      const kumpulan = parseInt(document.getElementById('slider-kumpulan').value);
+      const ahli = parseInt(document.getElementById('slider-ahli').value);
+      document.getElementById('val-kumpulan').textContent = kumpulan;
+      document.getElementById('val-ahli').textContent = ahli;
+      
+      const visualEl = document.getElementById('group-visual');
+      visualEl.innerHTML = ''; // Kosongkan
+      
+      let total = 0;
+      let penambahanBerulang = [];
+      
+      for (let i = 0; i < kumpulan; i++) {
+        let itemsHTML = '';
+        for (let j = 0; j < ahli; j++) {
+          itemsHTML += `<div class="group-item">🍎</div>`;
+        }
+        visualEl.innerHTML += `<div class="group-box flex flex-wrap justify-center">${itemsHTML}</div>`;
+        penambahanBerulang.push(ahli);
+        total += ahli;
+      }
+      
+      const resultEl = document.getElementById('group-result');
+      const ayatMatematik = `${kumpulan} × ${ahli} = ${total}`;
+      resultEl.textContent = ayatMatematik;
+      
+      const info = `Anda ada ${kumpulan} kumpulan. Setiap kumpulan ada ${ahli} ahli. Ayat matematik: ${ayatMatematik}. Penambahan berulang: ${penambahanBerulang.join(' + ')} sama dengan ${total}.`;
+      setInfo(info);
+    }
+
+    /* ====== Aktiviti 2: Kotak Pusing (Kalis Tukar Tertib) ====== */
+    function loadCommutativeBoxActivity(content) {
+      window.commState = { a: 2, b: 5, rotated: false };
+      setInfo("Eksperimen: Adakah 2 darab 5 sama dengan 5 darab 2? Tekan butang 'Pusingkan!'.");
+      content.innerHTML = `
+        <h3 class="text-2xl font-bold text-green-600 mb-6">🔄 Kotak Pusing ($2 \times 5 = 5 \times 2$)</h3>
+        
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="w-full md:w-1/3 bg-green-50 p-4 rounded-xl border border-green-200">
+            <div class="mb-4">
+              <label for="slider-a" class="block text-lg font-semibold text-green-800 mb-2">
+                Baris (A): <span id="val-a" class="font-bold">2</span>
+              </label>
+              <input type="range" id="slider-a" min="1" max="8" value="2" class="w-full" oninput="updateCommState('a', this.value)">
+            </div>
+            <div>
+              <label for="slider-b" class="block text-lg font-semibold text-green-800 mb-2">
+                Lajur (B): <span id="val-b" class="font-bold">5</span>
+              </label>
+              <input type="range" id="slider-b" min="1" max="8" value="5" class="w-full" oninput="updateCommState('b', this.value)">
+            </div>
+            <button onclick="toggleCommRotation()" class="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-lg">
+              Pusingkan!
+            </button>
+          </div>
+          
+          <div class="w-full md:w-2/3">
+            <div id="comm-visual-grid" class="visual-grid">
+              </div>
+            <div id="comm-result" class="mt-4 text-center text-3xl font-bold text-gray-800 bg-yellow-100 p-4 rounded-lg">
+              2 × 5 = 10
+            </div>
+          </div>
+        </div>
+      `;
+      renderCommutativeBox();
+    }
+    
+    function updateCommState(key, value) {
+      window.commState[key] = parseInt(value);
+      window.commState.rotated = false; // Reset putaran bila nilai berubah
+      renderCommutativeBox();
+    }
+    function toggleCommRotation() {
+      window.commState.rotated = !window.commState.rotated;
+      renderCommutativeBox();
+      const { a, b, rotated } = window.commState;
+      const msg = rotated ? `Sekarang ia menjadi ${b} kumpulan ${a}. ${b} darab ${a} = ${a*b}.` : `Ini ${a} kumpulan ${b}. ${a} darab ${b} = ${a*b}.`;
+      setInfo(msg);
+      speak(msg);
+    }
+    function renderCommutativeBox() {
+      const { a, b, rotated } = window.commState;
+      document.getElementById('val-a').textContent = a;
+      document.getElementById('val-b').textContent = b;
+      
+      const gridEl = document.getElementById('comm-visual-grid');
+      gridEl.innerHTML = '';
+      
+      const baris = rotated ? b : a;
+      const lajur = rotated ? a : b;
+      
+      gridEl.style.gridTemplateColumns = `repeat(${lajur}, minmax(0, 1fr))`;
+      
+      for (let i = 0; i < baris * lajur; i++) {
+        gridEl.innerHTML += `<div class="grid-dot"></div>`;
+      }
+      
+      const resultEl = document.getElementById('comm-result');
+      const ayatMatematik = rotated ? `${b} × ${a} = ${a * b}` : `${a} × ${b} = ${a * b}`;
+      resultEl.textContent = ayatMatematik;
+    }
+
+    /* ====== Aktiviti 3: Lompat Sifir (Garis Nombor) ====== */
+    function loadNumberLineActivity(content) {
+      window.numlineState = { sifir: 2, steps: 0, max: 20 };
+      setInfo("Pilih sifir (2, 5, atau 10). Tekan 'Lompat!' untuk melihat corak sifir pada garis nombor.");
+      content.innerHTML = `
+        <h3 class="text-2xl font-bold text-purple-600 mb-6">🤸 Lompat Sifir (Garis Nombor)</h3>
+        
+        <div class="mb-4 flex flex-wrap justify-center gap-3">
+          <button onclick="setSifir(2, 20)" class="bg-purple-200 text-purple-800 font-bold py-2 px-5 rounded-lg text-lg">Sifir 2</button>
+          <button onclick="setSifir(5, 50)" class="bg-purple-200 text-purple-800 font-bold py-2 px-5 rounded-lg text-lg">Sifir 5</button>
+          <button onclick="setSifir(10, 100)" class="bg-purple-200 text-purple-800 font-bold py-2 px-5 rounded-lg text-lg">Sifir 10</button>
+        </div>
+        
+        <div class="numline-container mb-4">
+          <div id="numline-visual" class="relative">
+             <div id="numline-char" class="numline-char" style="transform: translateX(0px);">🐸</div>
+             <div id="numline-track" class="flex"></div>
+          </div>
+        </div>
+
+        <div class="text-center mb-4">
+          <button onclick="jumpNumberLine()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg text-xl">
+            Lompat!
+          </button>
+          <button onclick="resetNumberLine()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg text-xl">
+            Reset
+          </button>
+        </div>
+        
+        <div id="numline-result" class="mt-4 text-center text-3xl font-bold text-gray-800 bg-yellow-100 p-4 rounded-lg">
+          Mula di 0
+        </div>
+      `;
+      renderNumberLine();
+    }
+    
+    function setSifir(sifir, max) {
+      window.numlineState = { sifir: sifir, steps: 0, max: max };
+      renderNumberLine();
+      setInfo(`Sifir ${sifir} dipilih. Tekan Lompat!`);
+    }
+    function resetNumberLine() {
+      setSifir(window.numlineState.sifir, window.numlineState.max);
+    }
+    function renderNumberLine() {
+      const { max } = window.numlineState;
+      const trackEl = document.getElementById('numline-track');
+      trackEl.innerHTML = '';
+      for (let i = 0; i <= max; i++) {
+        trackEl.innerHTML += `<div class="numline-item" id="num-${i}">${i}</div>`;
+      }
+      document.getElementById('num-0').classList.add('active');
+      document.getElementById('numline-char').style.transform = `translateX(0px)`;
+      document.getElementById('numline-result').textContent = "Mula di 0";
+    }
+    function jumpNumberLine() {
+      const { sifir, steps, max } = window.numlineState;
+      const newSteps = steps + 1;
+      const newPos = newSteps * sifir;
+      
+      if (newPos > max) {
+        setInfo("Sudah sampai hujung! Tekan 'Reset' untuk mula semula.");
+        speak("Sudah sampai hujung! Tekan 'Reset' untuk mula semula.");
+        return;
+      }
+      
+      window.numlineState.steps = newSteps;
+      
+      // Kemas kini visual
+      document.querySelectorAll('.numline-item.active').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`num-${newPos}`);
+      if(activeEl) {
+        activeEl.classList.add('active');
+        // Kira pergerakan katak
+        const charEl = document.getElementById('numline-char');
+        const offset = activeEl.offsetLeft - (charEl.offsetWidth / 2) + (activeEl.offsetWidth / 2);
+        charEl.style.transform = `translateX(${offset}px)`;
+      }
+
+      const ayatMatematik = `${newSteps} × ${sifir} = ${newPos}`;
+      document.getElementById('numline-result').textContent = ayatMatematik;
+      setInfo(`Lompatan ke-${newSteps}: ${ayatMatematik}`);
+      speak(ayatMatematik);
+    }
+
+    /* ====== Aktiviti 4: Misteri Sifir 0 ====== */
+    function loadSifirZeroActivity(content) {
+      setInfo("Apa jadi jika anda mendarab dengan sifar? Gunakan slider untuk melihat.");
+      content.innerHTML = `
+        <h3 class="text-2xl font-bold text-orange-600 mb-6">🥛 Misteri Sifir 0 (Gelas & 0 Guli)</h3>
+        
+        <div class="mb-4">
+          <label for="slider-gelas-0" class="block text-lg font-semibold text-orange-800 mb-2 text-center">
+            Bilangan Gelas (0 guli setiap satu): <span id="val-gelas-0" class="font-bold">1</span> </label>
+          <input type="range" id="slider-gelas-0" min="1" max="9" value="1" class="w-full max-w-md mx-auto block" oninput="renderSifirZero()"> </div>
+
+        <div id="visual-sifir-0" class="flex flex-wrap justify-center items-center bg-gray-50 p-4 rounded-xl min-h-48">
+          </div>
+        
+        <div id="result-sifir-0" class="mt-4 text-center text-3xl font-bold text-gray-800 bg-yellow-100 p-4 rounded-lg">
+          </div>
+      `;
+      renderSifirZero(); // Ini akan terus panggil dan tunjuk 1 gelas, dan '1 x 0 = 0'
+    }
+    
+    function renderSifirZero() {
+      const gelas = parseInt(document.getElementById('slider-gelas-0').value);
+      document.getElementById('val-gelas-0').textContent = gelas;
+      
+      const visualEl = document.getElementById('visual-sifir-0');
+      visualEl.innerHTML = ''; // Kosongkan
+      
+      for (let i = 0; i < gelas; i++) {
+        visualEl.innerHTML += `<div class="glass-box">🥛</div>`;
+      }
+      
+      const ayatMatematik = `${gelas} × 0 = 0 guli`;
+      document.getElementById('result-sifir-0').textContent = ayatMatematik;
+      
+      const msg = `Anda ada ${gelas} gelas. Setiap gelas ada 0 guli. Jumlah guli ialah 0. ${ayatMatematik}.`;
+      setInfo(msg);
+    }
+
+    /* ====== Aktiviti 5: Misteri Sifir 1 (KEMAS KINI) ====== */
+    function loadSifirOneActivity(content) {
+      setInfo("Apa jadi jika anda mendarab dengan satu? Gunakan slider untuk melihat.");
+      content.innerHTML = `
+        <h3 class="text-2xl font-bold text-red-600 mb-6">🔵 Misteri Sifir 1 (Gelas & 1 Guli)</h3>
+        
+        <div class="mb-4">
+          <label for="slider-gelas-1" class="block text-lg font-semibold text-red-800 mb-2 text-center">
+            Bilangan Gelas (1 guli setiap satu): <span id="val-gelas-1" class="font-bold">4</span>
+          </label>
+          <input type="range" id="slider-gelas-1" min="1" max="9" value="4" class="w-full max-w-md mx-auto block" oninput="renderSifirOne()">
+        </div>
+
+        <div id="visual-sifir-1" class="flex flex-wrap justify-center items-center bg-gray-50 p-4 rounded-xl min-h-48">
+          </div>
+        
+        <div id="result-sifir-1" class="mt-4 text-center text-3xl font-bold text-gray-800 bg-yellow-100 p-4 rounded-lg">
+          4 × 1 = 4
+        </div>
+      `;
+      renderSifirOne();
+    }
+    
+    function renderSifirOne() {
+      const gelas = parseInt(document.getElementById('slider-gelas-1').value);
+      document.getElementById('val-gelas-1').textContent = gelas;
+      
+      const visualEl = document.getElementById('visual-sifir-1');
+      visualEl.innerHTML = ''; // Kosongkan
+      
+      for (let i = 0; i < gelas; i++) {
+        visualEl.innerHTML += `
+          <div class="glass-box sifir-satu">
+            <div class="text-3xl mb-2">🔵</div> 🥛
+          </div>`;
+      }
+      
+      const ayatMatematik = `${gelas} × 1 = ${gelas} guli`;
+      document.getElementById('result-sifir-1').textContent = ayatMatematik;
+      
+      const msg = `Anda ada ${gelas} gelas. Setiap gelas ada 1 guli. Jumlah guli ialah ${gelas}. ${ayatMatematik}.`;
+      setInfo(msg);
+    }
+
+    /* ====== Kawalan Umum ====== */
+    function clearActivity() {
+      currentActivity = 0;
+      document.getElementById('activity-content').innerHTML = `
+        <div class="text-center py-16">
+          <div class="text-6xl mb-4">✖️</div>
+          <h2 class="text-3xl font-bold text-gray-800 mb-4">Kemahiran Pemulihan: Operasi Darab Asas</h2>
+          <p class="text-xl text-gray-600 mb-8">Pilih aktiviti di bawah untuk meneroka konsep darab.</p>
+          <div class="text-4xl">👇</div>
+        </div>
+      `;
+      setInfo("Pilih aktiviti untuk mula belajar darab!");
+    }
+    function nextActivity() {
+      if (currentActivity === 0) return loadActivity(1);
+      if (currentActivity < 5) return loadActivity(currentActivity + 1);
+      return loadActivity(1);
+    }
+
+    // Kekalkan TTS resume pada sesetengah pelayar
+    if ('speechSynthesis' in window) {
+      setInterval(() => { if (window.speechSynthesis.paused) window.speechSynthesis.resume(); }, 1000);
+    }
+  </script>
+</body>
+</html>
